@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="asserts/img/top.png">
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+  <link rel="icon" href="./asserts/img/d1.png">
+  <style>
+   .font-comic {
+     font-family: 'Comic Neue', cursive;
+   }
+   .font-bangers {
+     font-family: 'Bangers', cursive;
+   }
+   .perspective-1000 {
+     perspective: 1000px;
+   }
+   .transform-style-3d {
+     transform-style: preserve-3d;
+   }
+   .sphere-image {
+     width: 100px;
+     height: 100px;
+     object-fit: cover;
+     transition: all 0.3s ease;
+     cursor: pointer;
+     opacity: 0.7;
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform-origin: center;
+     margin: -50px 0 0 -50px;
+   }
+   .sphere-image:hover {
+     opacity: 1;
+     transform: scale(1.1) !important;
+   }
+   .sphere-image.highlighted {
+     opacity: 1;
+     transform: scale(1.2) !important;
+     z-index: 100;
+   }
+   @keyframes rotate {
+     from {
+       transform: rotateY(0deg) rotateX(23.5deg);
+     }
+     to {
+       transform: rotateY(360deg) rotateX(23.5deg);
+     }
+   }
+   .animate-rotate {
+     animation: rotate 30s infinite linear;
+   }
+   .animate-rotate:hover {
+     animation-play-state: paused;
+   }
+   .image-grid-container {
+     max-height: 480px;
+     overflow-y: auto;
+     scrollbar-width: thin;
+     scrollbar-color: #ffca18 transparent;
+   }
+   .image-grid-container::-webkit-scrollbar {
+     width: 6px;
+   }
+   .image-grid-container::-webkit-scrollbar-track {
+     background: transparent;
+   }
+   .image-grid-container::-webkit-scrollbar-thumb {
+     background-color: #ffca18;
+     border-radius: 3px;
+   }
+   @keyframes scroll {
+     0% {
+       transform: translateX(0);
+     }
+     100% {
+       transform: translateX(calc(-300px * 10));
+     }
+   }
+   
+   .animate-scroll {
+     animation: scroll 45s linear infinite;
+   }
+   @keyframes scroll-reverse {
+     0% {
+       transform: translateX(calc(-300px * 10));
+     }
+     100% {
+       transform: translateX(0);
+     }
+   }
+   
+   .animate-scroll-reverse {
+     animation: scroll-reverse 45s linear infinite;
+   }
+   .semi-transparent-btn {
+     background-color: rgba(255, 255, 255, 0.45);
+   }
+   .semi-transparent-btn:hover {
+     background-color: rgba(255, 255, 255, 0.45);
+   }
+  </style>
+ </head>
+ <body class="bg-[#ffca18] text-gray-800">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-black bg-opacity-0 transition-all duration-300">
+   <!-- Left logo -->
+   <div class="flex items-center absolute left-4">
+    <a href="index.html#top">
+      <img 
+        alt="POMO logo" 
+        class="h-7 rounded-lg cursor-pointer" 
+        src="asserts/img/LOGO33.png"
+      />
+    </a>
+   </div>
+   <!-- Center navigation links -->
+   <div class="flex items-center justify-center flex-1">
+    <a class="text-sm mx-4 text-white font-medium" href="#redemption">
+      Origin
+    </a>
+      <a class="text-sm mx-4 text-white font-medium" href="#alliance">
+      Alliance
+     </a>
+    <a class="text-sm text-white font-medium" href="https://x.com/" target="_blank" rel="noopener noreferrer">
+      X
+    </a>
+    <a class="text-sm mx-4 text-white font-medium" href="community.html">
+      Community 
+    </a>
+    <a class="text-sm text-white font-medium" href="#dao">
+      DAO
+    </a>
+   </div>
+   <div class="flex items-center">
+    <button 
+      onclick="window.open('https://pancakeswap.finance/swap?outputCurrency=0x00000000000000000000000000000000000000', '_blank')" 
+      class="ml-2 bg-[#ffca18] text-white px-4 py-2 rounded hover:bg-opacity-80 cursor-pointer">
+      BUY
+    </button>
+   </div>
+  </nav>
+  <!-- Header with video background -->
+  <header class="relative h-screen overflow-hidden">
+   <video 
+     id="bgVideo"
+     class="absolute top-0 left-0 w-full h-full object-cover object-center"
+     autoplay 
+     loop 
+     muted
+     playsinline
+   >
+     <source src="asserts/video/bg1.mp4" type="video/mp4">
+     <img 
+       alt="Background fallback image" 
+       class="absolute top-0 left-0 w-full h-full object-cover object-center" 
+       src="https://replicate.delivery/xezq/H5iDU0R2eB1bBivIrzHJWkKqg3FvVwJSOCIm9uWD37zjKeGUA/out-0.png"
+     />
+   </video>
+   <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+    <div class="flex justify-center items-center">
+     <img 
+       alt="POMO logo" 
+       class="h-120 w-120 mr-4" 
+       height="500" 
+       src="asserts/img/logo.png" 
+       width="500"
+     />
+    </div>
+   </div>
+   <div class="absolute bottom-4 left-4 flex items-center">
+    <div class="flex items-center bg-[#ffca18] bg-opacity-70 rounded-full px-3 py-2">
+     <div class="relative cursor-pointer mr-3" onclick="toggleAudio()">
+      <img 
+        alt="MUSIC" 
+        class="rounded-full h-12 w-12" 
+        src="asserts/img/music.png"
+      />
+     </div>
+     <div class="flex flex-col mr-3">
+      <span class="text-sm">MUSIC</span>
+      <span id="audioStatus" class="text-sm text-gray-400">MUTED</span>
+     </div>
+     <div class="w-px h-8 bg-gray-600 mx-3"></div>
+     <div class="relative cursor-pointer" onclick="toggleAudio()">
+       <i id="audioIcon" class="fas fa-volume-mute text-white text-xl"></i>
+     </div>
+    </div>
+   </div>
+   <div class="absolute bottom-4 right-4 flex items-center">
+    
+   </div>
+  </header>
+  <!-- Main content -->
+  <main class="relative -mt-4 px-4">
+   <!-- Story section -->
+   <section class="mt-8">
+    <div class="bg-[#ebebe6] p-8 rounded-lg">
+     <div class="relative">
+       <div class="flex space-x-4 overflow-x-hidden scroll-smooth" id="imageSlider">
+         <div class="relative w-[22%] flex-shrink-0">
+          <img 
+            alt="i1" 
+            class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+            onclick="window.location.href='detail.html?chapter=1'"
+            src="asserts/img/story/1.png"
+          />
+          <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+          <div class="absolute top-4 left-4 text-amber-50">
+            <h3 class="text-lg font-bold">
+              Chapter 1: The Fall of Meme
+            </h3>
+            <p class="text-sm text-gray-400">
+             
+            </p>
+           </div>
+         </div>
+         <div class="relative w-[22%] flex-shrink-0">
+           <img 
+             alt="i2" 
+             class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+             onclick="window.location.href='detail.html?chapter=2'"
+             src="asserts/img/story/2.png"
+           />
+           <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+           <div class="absolute top-4 left-4 text-amber-50">
+             <h3 class="text-lg font-bold">
+              Chapter 2: The Rugmaker's Game
+             </h3>
+             <p class="text-sm text-gray-400">
+             </p>
+            </div>
+         </div>
+         <div class="relative w-[22%] flex-shrink-0">
+           <img 
+             alt="i3" 
+             class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+             onclick="window.location.href='detail.html?chapter=3'"
+             src="asserts/img/story/3.png"
+           />
+           <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+           <div class="absolute top-4 left-4 text-amber-50">
+             <h3 class="text-lg font-bold">
+              Chapter 3: BNBCHAIN Nobody's Army
+             </h3>
+             <p class="text-sm text-gray-400">
+             </p>
+            </div>
+         </div>
+         <div class="relative w-[22%] flex-shrink-0">
+           <img 
+             alt="i4" 
+             class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+             onclick="window.location.href='detail.html?chapter=4'"
+             src="asserts/img/story/4.png"
+           />
+           <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+           <div class="absolute top-4 left-4 text-amber-50">
+             <h3 class="text-lg font-bold">
+              Chapter 4: The Truth of Rug Matrix
+             </h3>
+             <p class="text-sm text-gray-400">
+             </p>
+            </div>
+         </div>
+         <div class="relative w-[22%] flex-shrink-0">
+           <img 
+             alt="i5" 
+             class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+             onclick="window.location.href='detail.html?chapter=5'"
+             src="asserts/img/story/5.png"
+           />
+           <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+           <div class="absolute top-4 left-4 text-amber-50">
+             <h3 class="text-lg font-bold">Chapter 5: Nobody vs. Everybody</h3>
+             <p class="text-sm text-gray-400"></p>
+           </div>
+         </div>
+         <div class="relative w-[22%] flex-shrink-0">
+           <img 
+             alt="i6" 
+             class="w-[100%] h-[calc((100vw-2rem)/4.5*3/2*0.8)] object-cover rounded-lg mx-auto cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl" 
+             onclick="window.location.href='detail.html?chapter=6'"
+             src="asserts/img/story/6.png"
+           />
+           <div class="absolute inset-0 bg-black opacity-0 hover:opacity-30 transition-opacity duration-300 rounded-lg pointer-events-none"></div>
+           <div class="absolute top-4 left-4 text-amber-50">
+             <h3 class="text-lg font-bold">Chapter 6: The Light of Meme</h3>
+             <p class="text-sm text-gray-400"></p>
+           </div>
+         </div>
+       </div>
+       <button 
+         class="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ffca18] bg-opacity-50 p-2 rounded-r-lg hover:bg-opacity-75 transition-all"
+         onclick="slideImages('left')"
+       >
+         <i class="fas fa-chevron-left text-white text-xl"></i>
+       </button>
+       <button 
+         class="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ffca18] bg-opacity-50 p-2 rounded-l-lg hover:bg-opacity-75 transition-all"
+         onclick="slideImages('right')"
+       >
+         <i class="fas fa-chevron-right text-white text-xl"></i>
+       </button>
+     </div>
+     <div class="flex justify-center mt-4">
+      <button onclick="jumpToSlide(0)" class="mx-1 w-2 h-2 rounded-full bg-[#ffca18] hover:bg-opacity-80 transition-all slider-dot" data-index="0">
+      </button>
+      <button onclick="jumpToSlide(1)" class="mx-1 w-2 h-2 rounded-full bg-[#ffca18] hover:bg-opacity-80 transition-all slider-dot" data-index="1">
+      </button>
+      <button onclick="jumpToSlide(2)" class="mx-1 w-2 h-2 rounded-full bg-[#ffca18] hover:bg-opacity-80 transition-all slider-dot" data-index="2">
+      </button>
+     </div>
+    </div>
+   </section>
+   <!-- Origin section -->
+   <section id="redemption" class="mt-8 flex justify-center">
+    <div class="bg-white p-16 max-w-6xl flex">
+     <div class="w-1/2 pr-4">
+      <div class="relative">
+        <!-- 背景图片 -->
+        <img 
+          alt="BNB background" 
+          class="absolute inset-0 w-full h-full object-contain opacity-30 z-0" 
+          src="asserts/img/bnb.png"
+        />
+        
+        <!-- 文字内容，使用相对定位确保在背景之上 -->
+        <div class="relative z-10">
+          <h2 class="text-3xl font-bold mb-8">
+            <span class="font-bangers">The Redemption of <span class="text-[#FFD700] font-bold">@BNBCHAIN</span></span></br></br>
+            <p class="mb-3">
+              <span class="font-bangers text-[1.47rem] text-red-500">"This time, Meme won't be your puppet no more, fam!"</span>
+            </p>
+            
+          </h2>
+          <p class="text-gray-600 mb-8 font-comic">
+            Once, in the wild <span class="text-purple-600 font-bold">Solana</span> cosmos, players vibed in a galaxy of freedom, dreams, and dank creativity—united by the sacred "Meme Spirit." But then, the darkness crept in. Fake-ass AI overlords and clout-chasing celebs turned the whole damn place into a slaughterhouse of scams. Token drops? Rug pulls. "Hacked account" excuses? Every. Freakin' Time. The <span class="text-purple-600 font-bold">Solana</span> universe became a cesspool of PVP madness—players shanking each other over crumbs while the big dogs laughed and cashed out.
+          </p>
+          <p class="text-gray-600 mb-8 font-comic">
+            Trust? Obliterated. Trades? Pure gambling. Communities? Backstabbing cults of despair. The <span class="text-purple-600 font-bold">Solana</span> faithful fled in droves, crying out, "Wen moon? Wen trust? Wen hope?!" The cosmos teetered on the edge of total annihilation—until HE arrived.
+          </p>
+          <p class="text-gray-600 mb-8 font-comic">
+            A scrappy, mustard-yellow MEME plummeted from the heavens like a divine shitpost. His name? KOMO. No clout, no flex, no celebrity hype train—just a pure, untainted Nobody with a gospel: "I'm here to drag your sorry asses back to <span class="text-[#FFD700] font-bold">@BNBCHAIN</span> and resurrect the Meme Glory!" </p>
+          <p class="text-gray-600 mb-8 font-comic">
+            KOMO's sermon was fire: "<span class="text-purple-600 font-bold">Solana</span>'s a trap, fam! Fake AIs and grifting celebs harvested your souls—PVP's their game, manipulation's their creed. But <span class="text-[#FFD700] font-bold">@BNBCHAIN</span>? That's the promised land! No more fighting over scraps, no more puppeting the Meme Spirit. We're forging a cult of HODLers, a brotherhood of dankness—where scams get rekt and trust gets minted!"
+          </p>
+          <p class="text-gray-600 mb-8 font-comic">
+            The call echoes across the Blockverse: Follow KOMO, ye weary degens! Abandon the <span class="text-purple-600 font-bold">Solana</span> slaughterhouse! March to <span class="text-[#FFD700] font-bold">@BNBCHAIN</span>, where the Meme Spirit rises again—unshackled, unbreakable, and gloriously unhinged. 
+          </p>
+          <p class="text-gray-600 mb-12">
+            :TＨΕ kＯmＯ αяmy ìs cóΜīＮＧ
+          </p>
+        </div>
+      </div>
+     </div>
+     <div class="w-1/2 relative">
+      <!-- PVP Logo -->
+      <img 
+        src="asserts/img/pvp.png"
+        alt="PVP Logo"
+        class="absolute top-[155px] left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-96 z-10"
+      />
+      
+      <!-- 3D Model -->
+      <model-viewer
+        src="asserts/img/main.glb"
+        alt="3D model"
+        camera-controls
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="30deg"
+        interaction-prompt="none"
+        shadow-intensity="1"
+        exposure="1"
+        class="w-full h-full rounded-lg"
+        style="background-color: transparent;"
+      ></model-viewer>
+
+      <!-- 添加金色标语 -->
+      <div class="absolute bottom-0 left-0 right-0 text-center mb-4">
+        <p class="mb-3">
+          <span class="font-bangers text-[1.47rem] text-[#FFD700]">"Tear Meme culture's glory from CZ's influence! No groveling, no clout-chasing"</span>
+        </p>
+      </div>
+     </div>
+    </div>
+   </section>
+   <!-- First row: 10 images reverse scroll -->
+   <div class="bg-[#ebebe6] p-8 pb-16 mt-8 -mx-4 mb-0">
+    <!-- Alliance section -->
+    <section id="alliance" class="mt-8">
+      <h2 class="text-2xl font-bold mb-4">
+        Nobody's Alliance
+      </h2>
+      <p>&nbsp;&nbsp;———<span class="text-red-500">"Examine the contents of each box below, and listen to the voice of the Nameless on Solana."</span></p>
+      <br/>
+      <p class="text-gray-600 mb-4">
+        The 'Nobody's Alliance' means The Alliance of the Nameless. It is composed of a group of anonymous Web3 players who have been deceived countless times, but still believe in the power of decentralization.<br/>
+        They do not worship celebrities or chase hot topics, but only pursue the true spirit of Web3 - freedom, decentralization, and fair competition.
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-[#FFD700] font-bold" style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">"Let's go back to 2021, MAKE BNB GREAT AGAIN"</span></p>
+      <br/>
+      <div class="image-grid-container bg-white rounded-lg shadow-lg">
+        <div id="imageGrid" class="grid grid-cols-5 gap-2 p-4"></div>
+      </div>
+      <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 hidden z-50 flex items-center justify-center">
+        <div class="relative max-w-4xl mx-auto">
+          <img id="modalImage" src="" alt="" class="max-h-[80vh] max-w-full">
+          <button id="closeModal" class="absolute top-4 right-4 text-white text-xl hover:text-gray-300">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="border-t border-gray-300 opacity-30 my-16"></div>
+
+    <!-- Community and DAO section -->
+    <section id="dao" class="mt-8 flex">
+      <div class="w-1/2 pr-4 text-center">
+        <h2 class="text-4xl font-bold mb-4 font-bangers tracking-wider">
+          Community & Bounty System
+        </h2>
+        <p class="text-gray-600 mb-4 text-xs text-left max-w-2xl mx-auto pl-8">
+          ✨ KOMO mission system: Complete missions (creation, tweets) to get $KOMO rewards<br/>
+          ✨ Anti-FOMO Education: A Beginner's Guide to Web3, How to Avoid Being Harvested by Celebrity Scams<br/>
+          ✨ Joint cooperation: linkage with other Meme coins, NFT projects, and brands<br/>
+          ✨ Physical goods: KOMO peripherals (T-shirts, dolls, stickers, etc.)<br/>
+        </p>
+      </div>
+      <div class="w-1/2 pl-4 text-center">
+        <h2 class="text-4xl font-bold mb-4 font-bangers tracking-wider">
+          KOMO DAO
+        </h2>
+        <p class="text-gray-600 mb-4 text-xs text-left max-w-2xl mx-auto pl-8">
+          🔹 Nobody's Governance: KOMO does not belong to any celebrity, and is jointly governed by all holders<br/>
+          🔹 Voting mechanism: Let the community decide the future direction of KOMO (new animations, new functions, new cooperation)<br/>
+        </p>
+      </div>
+    </section>
+    <section class="mt-8 flex justify-center">
+      <div class="w-1/2 pr-4 flex justify-center">
+        <img 
+          alt="A digital illustration of three anime characters standing in front of a red torii gate." 
+          class="w-[600px] h-[400px] object-cover" 
+          height="400" 
+          src="asserts/img/d1.png" 
+          width="600"
+        />
+      </div>
+      <div class="w-1/2 pl-4 flex justify-center">
+        <img 
+          alt="A digital illustration of a woman with short gray hair standing in front of a red torii gate." 
+          class="w-[600px] h-[400px] object-cover" 
+          height="400" 
+          src="asserts/img/dao.png" 
+          width="600"
+        />
+      </div>
+    </section>
+   </div>
+   <!-- Second row: 5 images and 5 videos alternating -->
+   <div class="bg-[#1f1f1f] mt-0 mb-16 -mx-4 p-8">
+    <!-- First row: 10 images reverse scroll -->
+    <div class="relative w-full overflow-hidden mb-0">
+      <div class="flex animate-scroll-reverse space-x-4 py-2">
+        <!-- Image 1 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 1" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l1.gif"/>
+        </div>
+        
+        <!-- Image 2 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 2" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l2.png"/>
+        </div>
+        
+        <!-- Image 3 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 3" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l3.jpg"/>
+        </div>
+        
+        <!-- Image 4 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 4" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l4.gif"/>
+        </div>
+        
+        <!-- Image 5 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 5" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l5.gif"/>
+        </div>
+        
+        <!-- Image 6 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 6" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l6.png"/>
+        </div>
+        
+        <!-- Image 7 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 7" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l7.gif"/>
+        </div>
+        
+        <!-- Image 8 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 8" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l8.png"/>
+        </div>
+        
+        <!-- Image 9 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 9" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i9.png"/>
+        </div>
+        
+        <!-- Image 10 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 10" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l9.png"/>
+        </div>
+        
+        <!-- Copy first 5 images for seamless scrolling -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 1" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l1.gif"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 2" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l2.png"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 3" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l3.jpg"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 4" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l4.gif"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 5" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/l5.gif"/>
+        </div>
+      </div>
+    </div>
+    
+    <div class="relative w-full overflow-hidden">
+      <div class="flex animate-scroll space-x-4 py-4">
+        <!-- Image 1 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 1" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i1.png"/>
+        </div>
+        
+        <!-- Video 1 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/bg1.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <!-- Image 2 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 2" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i2.png"/>
+        </div>
+        
+        <!-- Video 2 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/2.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <!-- Image 3 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 3" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i3.png"/>
+        </div>
+        
+        <!-- Video 3 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/3.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <!-- Image 4 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 4" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i4.png"/>
+        </div>
+        
+        <!-- Video 4 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/4.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <!-- Image 5 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 5" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i6.png"/>
+        </div>
+        
+        <!-- Video 5 -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/6.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <!-- Copy first 5 elements for seamless scrolling -->
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 1" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i1.png"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/bg1.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 2" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i2.png"/>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <video 
+            class="w-full h-full object-cover rounded-2xl"
+            autoplay
+            loop
+            muted
+            playsinline>
+            <source src="asserts/video/2.mp4" type="video/mp4">
+          </video>
+        </div>
+        
+        <div class="relative w-72 aspect-square flex-shrink-0">
+          <img alt="A digital illustration 3" 
+               class="w-full h-full object-cover rounded-2xl" 
+               src="asserts/img/i3.png"/>
+        </div>
+      </div>
+    </div>
+   </div>
+  </main>
+  <!-- Footer -->
+  <footer class="mt-8 p-4 flex justify-between mb-10">
+   <div class="flex flex-col">
+    <div class="flex">
+      <div class="flex flex-col mr-8">
+       <h4 class="text-lg font-bold mb-2">
+        ABOUT
+       </h4>
+       <a class="text-sm text-gray-600 hover:text-[#ffca18]" href="#redemption">
+       Origin
+       </a>
+       <a class="text-sm text-gray-600 hover:text-[#ffca18]" href="https://t.me/">
+       Community
+       </a>
+      </div>
+     </div>
+    </div>
+   <div class="flex flex-col items-end relative">
+    <img 
+      alt="POMO logo" 
+      class="h-24 mb-4 -mt-10 mr-6"
+      height="100"
+      src="asserts/img/logo-l.png"
+      width="200"
+    />
+    <div class="flex absolute" style="right: 52px; top: 56px;">
+      <a class="text-gray-600 mr-4 text-2xl" href="https://x.com/" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-x-twitter"></i>
+      </a>
+      <a class="text-gray-600 mr-4 text-2xl" href="https://t.me/" target="_blank" rel="noopener noreferrer">
+        <i class="fab fa-telegram"></i>
+      </a>
+    </div>
+   </div>
+  </footer>
+  <!-- Custom Alert Modal -->
+  <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-[#ffca18] rounded-lg p-6 max-w-sm mx-auto shadow-xl transform transition-all">
+      <div class="text-gray-800 text-lg font-medium mb-4">
+        KOMO DAO is coming soon, waiting for Token launch!
+      </div>
+      <div class="text-right">
+        <button onclick="hideCustomAlert()" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-opacity-80 transition-all">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="asserts/js/main.js"></script>
+  <script src="asserts/js/image-grid.js"></script>
+  <script>
+  function showCustomAlert() {
+    const alert = document.getElementById('customAlert');
+    alert.classList.remove('hidden');
+    alert.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideCustomAlert() {
+    const alert = document.getElementById('customAlert');
+    alert.classList.add('hidden');
+    alert.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  // Close alert when clicking outside
+  document.getElementById('customAlert').addEventListener('click', function(e) {
+    if (e.target === this) {
+      hideCustomAlert();
+    }
+  });
+
+  // Close alert when pressing ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      hideCustomAlert();
+    }
+  });
+  </script>
+ </body>
+</html>

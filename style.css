@@ -1,0 +1,49 @@
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+}
+
+/* Dropdown menu in navigation */
+.group:hover .group-hover\:block {
+  display: block;
+}
+
+/* Image card height calculation */
+.card-image-height {
+  height: calc((100vw - 2rem)/4*3/2);
+}
+
+/* Carousel container */
+.carousel-container {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Hide scrollbar while keeping scrollable functionality */
+#imageSlider {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+#imageSlider::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+
+@font-face {
+  font-family: 'Comic';
+  src: url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+}
+
+.font-bangers {
+  font-family: 'Bangers', cursive;
+}
+
+.font-comic {
+  font-family: 'Comic', 'Patrick Hand', cursive;
+  font-size: 1.1rem;
+  line-height: 1.8;
+} 
